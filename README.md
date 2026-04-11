@@ -51,7 +51,7 @@ What this means:
 
 4. Open the "README.md" for details
 
-## Project Structure
+## Created PetProject Structure
 
 ```text
 app/
