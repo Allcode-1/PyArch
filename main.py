@@ -4,7 +4,10 @@ import shutil
 from textwrap import dedent
 
 # base dir
-base = Path(r"C:\your_path")
+base_path = input("Where create project? Leave empty for current folder: ").strip()
+base = Path(base_path).expanduser().resolve() if base_path else Path.cwd()
+if not base.exists():
+    raise FileNotFoundError(f"Base path does not exist: {base}")
 
 # creating a pf
 print("Name your project: ")
@@ -26,7 +29,7 @@ env.write_text(dedent("""
 
     # jwt things
     SECRET_KEY=your_secret_key
-    ALGHORITM="HS256"
+    ALGORITHM="HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES=30
     """).strip() + "\n",
     encoding="utf-8",
@@ -125,6 +128,7 @@ session.write_text(dedent("""
 
 # creating a __ for tests db
 tests_init = tests_dir / "__init__.py"
+tests_init.touch(exist_ok=True)
 tests_db = tests_dir / "conftest.py"
 tests_db.touch(exist_ok=True)
 tests_db.write_text(dedent("""
@@ -142,10 +146,9 @@ tests_db.write_text(dedent("""
 
 
     DATABASE_URL = os.getenv("DATABASE_URL")
-    TEST_DATABASE_URL = os.getenv(
-        "TEST_DATABASE_URL",
-        "postgresql+psycopg://yourname:password@localhost:5432/your-test-db"
-    )
+    TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL")
+    if not TEST_DATABASE_URL:
+        raise ValueError("TEST_DATABASE_URL is not set")
 
 
     def validate_test_database_url() -> None:
@@ -259,7 +262,7 @@ alembic_env.write_text(dedent("""
 
     database_url = os.getenv("DATABASE_URL")
     if not database_url:
-        raise ValueError("DATABSE_URL is not set")
+        raise ValueError("database_url is not set")
 
     config.set_main_option("sqlalchemy.url", database_url)
 
@@ -316,20 +319,9 @@ readme.write_text(dedent("""
     - Do the same for `TEST_DATABASE_URL` if you want to run tests.
     - You can skip the JWT settings for now. They are only needed for JWT-based auth.
 
-    ### 2. Update `tests/conftest.py`
 
-    Change line 17 in `tests/conftest.py`.
-
-    It is basically set like this:
-
-    ```bash
-    postgresql+psycopg://yourname:password@localhost:5432/your-test-db
-    ```
-
-    Replace it with your own test database settings. You can copy them from .env.
-
-    3. Create and apply your first Alembic migration
-    Once you have created your SQLAlchemy models in app/models, run:
+    ### 2. Create and apply your first Alembic migration
+    AFTER creating your SQLAlchemy models in app/models, run:
 
     ```bash
     uv run alembic revision --autogenerate -m "your message"

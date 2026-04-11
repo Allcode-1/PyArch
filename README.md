@@ -1,13 +1,13 @@
 # Script for creating fastapi pet-project skeleton
 
-Just run script, write down project name and it will create a new file with architecture for your pf. Read "README.md" file for detail instructions
+Just run the script and start your project. You will need uv to use this. Read "README.md" file for detail instructions
 
 ## Project Status
 
 - Current level: **MVP**
 
 What this means:
-- Project can only create fastapi petproject sceleton.
+- Script can only generate fastapi petproject sceleton.
 - It is sync fastapi petproject base.
 - No other stack petprojects included.
 - Script does not have a exception handlers.
@@ -29,18 +29,18 @@ What this means:
 ## Tech Stack
 
 - Python 3.xx
-- Pathlib 0.1.0
 
 ## Quick Start (Local)
 
-1. Set a dir for folder where you want your future app to be (base_dir at the start)
+1. Run the script
 ```bash
-    base = Path(r"C:\your_path")
+    uv run main.py
 ```
 
-2. Run the script
+2. Write down the dir for project
 ```bash
-    python main.py
+    # Where create project? Leave empty for current folder:
+    C:/your_path
 ```
 
 3. Write down the name of project
@@ -68,5 +68,5 @@ alembic/        # migrations settings (pre-ready)
 
 ## Notes
 
-- This project was made personally for me, it may not work on your devices.
-- The goal is to create nice skeleton for my fastapi prtprojects.
+- This script was made personally for me, it may not work on your devices.
+- The goal is to create nice skeleton for my fastapi prtprojects using script.
