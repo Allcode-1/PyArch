@@ -1,0 +1,87 @@
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
+from sqlalchemy.orm import Session
+
+from app.db.session import get_db
+from app.schemas.{{ module_name }} import (
+    {{ model_name }}Create,
+    {{ model_name }}Read,
+    {{ model_name }}Update,
+)
+from app.services import {{ module_name }} as {{ module_name }}_service
+from app.services.{{ module_name }} import {{ model_name }}NotFoundError
+
+
+router = APIRouter(prefix="/{{ resource_name }}", tags=["{{ resource_name }}"])
+DbSession = Annotated[Session, Depends(get_db)]
+
+
+def not_found_error(error: {{ model_name }}NotFoundError) -> HTTPException:
+    return HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=str(error),
+    )
+
+
+@router.post(
+    "",
+    response_model={{ model_name }}Read,
+    status_code=status.HTTP_201_CREATED,
+)
+def add_item(
+    payload: {{ model_name }}Create,
+    db: DbSession,
+) -> {{ model_name }}Read:
+    item = {{ module_name }}_service.add_item(db, payload)
+    return {{ model_name }}Read.model_validate(item)
+
+
+@router.get("", response_model=list[{{ model_name }}Read])
+def get_items(
+    db: DbSession,
+    offset: Annotated[int, Query(ge=0)] = 0,
+    limit: Annotated[int, Query(ge=1, le=100)] = 100,
+) -> list[{{ model_name }}Read]:
+    items = {{ module_name }}_service.get_items(
+        db,
+        offset=offset,
+        limit=limit,
+    )
+    return [{{ model_name }}Read.model_validate(item) for item in items]
+
+
+@router.get("/{item_id}", response_model={{ model_name }}Read)
+def get_item(item_id: int, db: DbSession) -> {{ model_name }}Read:
+    try:
+        item = {{ module_name }}_service.get_item(db, item_id)
+        return {{ model_name }}Read.model_validate(item)
+    except {{ model_name }}NotFoundError as error:
+        raise not_found_error(error) from error
+
+
+@router.patch("/{item_id}", response_model={{ model_name }}Read)
+def patch_item(
+    item_id: int,
+    payload: {{ model_name }}Update,
+    db: DbSession,
+) -> {{ model_name }}Read:
+    try:
+        item = {{ module_name }}_service.patch_item(db, item_id, payload)
+        return {{ model_name }}Read.model_validate(item)
+    except {{ model_name }}NotFoundError as error:
+        raise not_found_error(error) from error
+
+
+@router.delete(
+    "/{item_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_class=Response,
+)
+def delete_item(item_id: int, db: DbSession) -> Response:
+    try:
+        {{ module_name }}_service.delete_item(db, item_id)
+    except {{ model_name }}NotFoundError as error:
+        raise not_found_error(error) from error
+
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

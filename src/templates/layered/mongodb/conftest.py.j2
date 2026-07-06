@@ -1,0 +1,36 @@
+from collections.abc import Generator
+from typing import Any
+
+import mongomock
+import pytest
+from fastapi.testclient import TestClient
+from pymongo.database import Database
+
+from app.db.session import get_database
+from app.main import app as fastapi_app
+
+
+@pytest.fixture()
+def database() -> Generator[Database[dict[str, Any]], None, None]:
+    mongo_client: Any = mongomock.MongoClient()
+    yield mongo_client["app_test"]
+    mongo_client.close()
+
+
+@pytest.fixture()
+def client(
+    database: Database[dict[str, Any]],
+) -> Generator[TestClient, None, None]:
+    def override_get_database() -> Generator[
+        Database[dict[str, Any]],
+        None,
+        None,
+    ]:
+        yield database
+
+    fastapi_app.dependency_overrides[get_database] = override_get_database
+
+    with TestClient(fastapi_app) as test_client:
+        yield test_client
+
+    fastapi_app.dependency_overrides.clear()

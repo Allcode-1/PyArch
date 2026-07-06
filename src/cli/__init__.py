@@ -1,0 +1,1 @@
+"""PyArch command-line interface."""

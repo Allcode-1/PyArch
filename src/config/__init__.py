@@ -1,0 +1,1 @@
+"""PyArch project configuration."""

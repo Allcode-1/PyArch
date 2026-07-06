@@ -13,6 +13,7 @@ if not base.exists():
 print("Name your project: ")
 project_name = input()
 project_dir = base / project_name
+
 subprocess.run(["uv", "init", project_name], cwd=base, check=True)
 subprocess.run(["uv", "add", "fastapi", "uvicorn", "sqlalchemy", "psycopg[binary]", "alembic", "dotenv"], cwd=project_dir, check=True)
 subprocess.run(["uv", "add", "--dev", "pytest", "mypy", "ruff"], cwd=project_dir, check=True)
@@ -126,7 +127,7 @@ session.write_text(dedent("""
     encoding="utf-8",
 )
 
-# creating a __ for tests db
+# creating a __init__ for tests db and tests db itself
 tests_init = tests_dir / "__init__.py"
 tests_init.touch(exist_ok=True)
 tests_db = tests_dir / "conftest.py"

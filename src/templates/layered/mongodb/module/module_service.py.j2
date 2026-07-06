@@ -1,0 +1,69 @@
+from typing import Any
+
+from pymongo.database import Database
+
+from app.models.{{ module_name }} import {{ model_name }}
+from app.repositories import {{ module_name }} as {{ module_name }}_repository
+from app.schemas.{{ module_name }} import {{ model_name }}Create, {{ model_name }}Update
+
+
+class {{ model_name }}NotFoundError(LookupError):
+    def __init__(self, item_id: str) -> None:
+        super().__init__(f"{{ model_name }} with id={item_id} was not found")
+
+
+def add_item(
+    database: Database[dict[str, Any]],
+    payload: {{ model_name }}Create,
+) -> {{ model_name }}:
+    return {{ module_name }}_repository.add_item(
+        database,
+        payload.model_dump(),
+    )
+
+
+def get_items(
+    database: Database[dict[str, Any]],
+    *,
+    offset: int = 0,
+    limit: int = 100,
+) -> list[{{ model_name }}]:
+    return {{ module_name }}_repository.get_items(
+        database,
+        offset=offset,
+        limit=limit,
+    )
+
+
+def get_item(
+    database: Database[dict[str, Any]],
+    item_id: str,
+) -> {{ model_name }}:
+    item = {{ module_name }}_repository.get_item(database, item_id)
+    if item is None:
+        raise {{ model_name }}NotFoundError(item_id)
+    return item
+
+
+def patch_item(
+    database: Database[dict[str, Any]],
+    item_id: str,
+    payload: {{ model_name }}Update,
+) -> {{ model_name }}:
+    item = {{ module_name }}_repository.patch_item(
+        database,
+        item_id,
+        payload.model_dump(exclude_unset=True),
+    )
+    if item is None:
+        raise {{ model_name }}NotFoundError(item_id)
+    return item
+
+
+def delete_item(
+    database: Database[dict[str, Any]],
+    item_id: str,
+) -> None:
+    deleted = {{ module_name }}_repository.delete_item(database, item_id)
+    if not deleted:
+        raise {{ model_name }}NotFoundError(item_id)

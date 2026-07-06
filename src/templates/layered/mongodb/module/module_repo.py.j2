@@ -1,0 +1,99 @@
+from datetime import UTC, datetime
+from typing import Any
+
+from bson import ObjectId
+from bson.errors import InvalidId
+from pymongo import ReturnDocument
+from pymongo.collection import Collection
+from pymongo.database import Database
+
+from app.models.{{ module_name }} import {{ model_name }}
+
+
+def get_collection(
+    database: Database[dict[str, Any]],
+) -> Collection[dict[str, Any]]:
+    return database["{{ resource_name }}"]
+
+
+def to_model(document: dict[str, Any]) -> {{ model_name }}:
+    return {{ model_name }}(
+        id=str(document["_id"]),
+        title=document["title"],
+        description=document.get("description"),
+        created_at=document["created_at"],
+        updated_at=document["updated_at"],
+    )
+
+
+def to_object_id(item_id: str) -> ObjectId | None:
+    try:
+        return ObjectId(item_id)
+    except InvalidId:
+        return None
+
+
+def add_item(
+    database: Database[dict[str, Any]],
+    values: dict[str, Any],
+) -> {{ model_name }}:
+    now = datetime.now(UTC)
+    document = {
+        **values,
+        "created_at": now,
+        "updated_at": now,
+    }
+    result = get_collection(database).insert_one(document)
+    document["_id"] = result.inserted_id
+    return to_model(document)
+
+
+def get_items(
+    database: Database[dict[str, Any]],
+    *,
+    offset: int = 0,
+    limit: int = 100,
+) -> list[{{ model_name }}]:
+    cursor = get_collection(database).find().skip(offset).limit(limit)
+    return [to_model(document) for document in cursor]
+
+
+def get_item(
+    database: Database[dict[str, Any]],
+    item_id: str,
+) -> {{ model_name }} | None:
+    object_id = to_object_id(item_id)
+    if object_id is None:
+        return None
+
+    document = get_collection(database).find_one({"_id": object_id})
+    return to_model(document) if document is not None else None
+
+
+def patch_item(
+    database: Database[dict[str, Any]],
+    item_id: str,
+    values: dict[str, Any],
+) -> {{ model_name }} | None:
+    object_id = to_object_id(item_id)
+    if object_id is None:
+        return None
+
+    document = get_collection(database).find_one_and_update(
+        {"_id": object_id},
+        {"$set": {**values, "updated_at": datetime.now(UTC)}},
+        return_document=ReturnDocument.AFTER,
+    )
+    return to_model(document) if document is not None else None
+
+
+def delete_item(
+    database: Database[dict[str, Any]],
+    item_id: str,
+) -> bool:
+    object_id = to_object_id(item_id)
+    if object_id is None:
+        return False
+
+    result = get_collection(database).delete_one({"_id": object_id})
+    return result.deleted_count == 1
