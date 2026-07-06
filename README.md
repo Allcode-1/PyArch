@@ -1,5 +1,12 @@
 # PyArch
 
+![Python](https://img.shields.io/badge/Python-3.13%2B-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-backend-green)
+![Typer](https://img.shields.io/badge/Typer-CLI-purple)
+![Jinja2](https://img.shields.io/badge/Jinja2-templates-orange)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Status](https://img.shields.io/badge/status-MVP%2B-orange)
+
 **PyArch is a stateful CLI that creates FastAPI projects and evolves them
 through project-aware generation commands.**
 
