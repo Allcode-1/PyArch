@@ -1,70 +1,190 @@
 # PyArch
 
-PyArch is a small CLI tool for generating and extending FastAPI pet projects.
-It is built with Typer and Jinja2 and currently focuses on a single opinionated
-Layered Architecture.
+**PyArch is a stateful CLI that creates FastAPI projects and evolves them
+through project-aware generation commands.**
 
-The project started as a personal replacement for repeatedly creating the same
-FastAPI structure by hand. It is primarily developed for my own workflow and is
-not intended to be a universal production-ready scaffolding tool yet (probly never haha).
+It creates a backend project, stores its configuration in `pyarch.toml`, and
+later uses that state to add modules and modify the existing application.
 
-## Project Status
+The CLI is the interface. The core idea is project-aware backend development
+tooling built around a manifest, generators, templates, and FastAPI conventions.
 
-**MVP+ — early development**
+```text
+pyarch init
+    ↓
+Generated FastAPI project
+    ↓
+pyarch.toml
+    ↓
+pyarch generate module users
+    ↓
+Project is extended
+    ↓
+Manifest is updated
+```
 
-The first working CLI flow is in place, but the project is still at the
-beginning of development. Commands, generated code, templates, and the manifest
-format may change.
+## Highlights
 
-Current limitations:
+- Creates Layered FastAPI projects
+- Supports PostgreSQL, SQLite and MongoDB
+- Stateful project manifest (`pyarch.toml`)
+- Project-aware module generation
+- Automatic router and model registration
+- Jinja2 template rendering with `StrictUndefined`
+- Dependency installation via `uv`
 
-- only Layered Architecture is supported;
-- generated applications use synchronous database access;
-- only FastAPI projects are supported;
-- integrations are planned, but their generators are not implemented yet;
-- generated projects are starter scaffolds and still require manual
-  configuration and application-specific code;
-- the tool is currently tested mainly against my personal workflow and
-  environment.
+## 30-second demo
+
+```bash
+$ pyarch init demo --database postgres
+
+✓ Creating project...
+✓ Installing dependencies...
+✓ Configuring Alembic...
+✓ Writing manifest...
+✓ Done.
+
+$ cd demo
+
+$ pyarch generate module users
+
+✓ Creating module...
+✓ Registering model...
+✓ Registering router...
+✓ Updating manifest...
+✓ Done.
+
+$ pyarch info
+
+Project: demo
+Architecture: Layered
+Database: PostgreSQL
+Modules:
+- users
+```
+
+## Why PyArch?
+
+PyArch started as a tool to remove repetitive setup work in FastAPI projects:
+database configuration, layered structure, Alembic setup, tests and CRUD wiring.
+
+PyArch was inspired by the developer experience of Nest CLI, but is focused on
+FastAPI projects and incremental project evolution.
+
+Unlike one-shot template generators, PyArch keeps project state in a manifest
+and uses it for later commands. The goal is not only to create the first project
+structure, but also to extend the project after it already exists.
+
+## Project Manifest
+
+PyArch stores selected architecture, database backend, generated modules and
+enabled integrations in `pyarch.toml`.
+
+This allows later commands to understand and extend the existing project instead
+of treating generation as a one-time template render.
+
+The manifest currently records:
+
+- schema version;
+- PyArch version;
+- project name;
+- selected architecture;
+- database engine;
+- database access style;
+- generated modules;
+- enabled integrations;
+- generated project paths.
+
+## Generated Module Flow
+
+```bash
+pyarch generate module users
+```
+
+The module generator:
+
+```text
+pyarch generate module users
+    ↓
+read manifest
+    ↓
+detect backend
+    ↓
+render templates
+    ↓
+register model
+    ↓
+register router
+    ↓
+update manifest
+```
+
+## Architecture
+
+```text
+User
+ │
+ ▼
+Typer CLI
+ │
+ ▼
+Application Services
+ │
+ ▼
+Generators
+ │
+ ├──────────────┐
+ ▼              │
+Jinja2          │
+Templates       │
+ │
+ ▼              │
+Filesystem      │
+ │
+ ▼              │
+Generated Project
+ ▲
+ │
+pyarch.toml
+```
+
+## Design Decisions
+
+### Why a manifest instead of scanning the filesystem?
+
+Scanning the filesystem can show which files exist, but it cannot reliably
+explain why they exist or which generator state produced them. The manifest
+stores project-level decisions such as architecture, database backend, generated
+modules, integrations, paths, schema version, and PyArch version. Later commands
+can read that state directly instead of guessing from folders and imports.
+
+### Why marker-based registration instead of AST rewriting?
+
+PyArch currently modifies files it generated itself, so explicit markers are
+simple, readable, and predictable. For router and model registration, the tool
+only needs stable insertion points, not a full Python code transformation
+pipeline. AST rewriting may become useful later if PyArch needs to safely modify
+arbitrary user-written code.
+
+### Why Jinja2?
+
+Generated FastAPI files are mostly structured text, and Jinja2 keeps templates
+close to the final code that users will read. `StrictUndefined` makes template
+errors fail fast when required context is missing. This keeps generators simple
+while still making missing data visible during development.
 
 ## What Works Now
 
 - creating a new Layered FastAPI project;
 - choosing PostgreSQL, SQLite, or MongoDB during initialization;
 - installing the matching runtime and development dependencies with `uv`;
-- generating the application layers, database configuration, test setup, and
+- generating application layers, database configuration, test setup, and
   Alembic configuration for relational databases;
-- generating a basic CRUD module and registering its model and router;
+- generating a basic CRUD module after project creation;
+- registering generated SQLAlchemy models in `app/models/__init__.py`;
+- registering generated routers in `app/api/v1/router.py`;
 - keeping project state in `pyarch.toml`;
 - displaying the current project configuration through the CLI.
-
-## Requirements
-
-- Python 3.13 or newer;
-- [uv](https://docs.astral.sh/uv/).
-
-## Local Setup
-
-Clone the repository and install its dependencies:
-
-```bash
-git clone <repository-url>
-cd pathlib
-uv sync
-```
-
-Run the CLI directly from the repository:
-
-```bash
-uv run pyarch --help
-```
-
-For personal use outside the repository, install the current checkout as a
-local tool:
-
-```bash
-uv tool install --editable .
-```
 
 ## Usage
 
@@ -95,11 +215,33 @@ Generate a CRUD module:
 pyarch generate module users
 ```
 
-The module generator reads `pyarch.toml`, adapts its templates to the selected
-database, creates the Layered Architecture files, and registers the generated
-model and router.
+## Roadmap
+
+### v0.2
+
+- safe generation
+- validation improvements
+- rollback on failed generation
+- integration generator foundation
+- PyPI package publishing
+
+### v0.3
+
+- auth generator
+- Redis integration
+- scheduler integration
+- dry-run mode
+
+### Later
+
+- new architectures
+- plugin system
+- async database access
 
 ## Generated Structure
+
+<details>
+<summary>Show generated project tree</summary>
 
 A generated project currently follows this general structure:
 
@@ -124,25 +266,48 @@ my_project/
 └── pyproject.toml
 ```
 
-`pyarch.toml` records the selected architecture, database backend, generated
-modules, enabled integrations, and generator version. This state will be used
-to make later generation steps aware of the existing project.
+</details>
 
-## Roadmap
+## Requirements
 
-- implement integration generators;
-- improve validation, error handling, and rollback behavior;
-- make repeated generation safer and more predictable;
-- add dry-run and generated-diff workflows;
-- expand automated tests;
-- consider additional architectures after the Layered flow becomes stable.
+- Python 3.13 or newer;
+- [uv](https://docs.astral.sh/uv/).
 
-Supporting many architectures is not the immediate goal. The current priority
-is to make one Layered FastAPI workflow reliable enough for regular personal
-use.
+## Local Setup
 
-## Disclaimer
+Clone the repository and install its dependencies:
 
-PyArch is an experimental personal developer tool. Review generated code before
-using it in a real project, and expect breaking changes while the CLI is in its
-MVP+ stage.
+```bash
+git clone <repository-url>
+cd pathlib
+uv sync
+```
+
+Run the CLI directly from the repository:
+
+```bash
+uv run pyarch --help
+```
+
+Install the current checkout as a local CLI tool:
+
+```bash
+uv tool install --editable .
+```
+
+## Project Status
+
+**MVP+ — early development**
+
+The first working CLI flow is in place. Commands, generated code, templates, and
+the manifest format may still change while the project evolves.
+
+## Current Limitations
+
+- only Layered Architecture is supported;
+- generated applications use synchronous database access;
+- only FastAPI projects are supported;
+- integration generators are planned, but not implemented yet;
+- generated projects are starter scaffolds and still require application-specific
+  configuration and code;
+- the manifest format may change before a stable release.
