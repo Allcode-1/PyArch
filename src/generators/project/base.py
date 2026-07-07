@@ -2,6 +2,10 @@ from pathlib import Path
 
 from src.generators.common.commands import run_command
 from src.generators.common.filesystem import create_empty_dir, create_empty_file
+from src.generators.common.gitignore import (
+    BASE_GITIGNORE_ENTRIES,
+    ensure_gitignore_entries,
+)
 from src.generators.common.renderer import create_file_from_template
 
 
@@ -14,6 +18,7 @@ def create_base_dir(project_name: str) -> Path:
 
     # creating base uv app
     run_command("uv", "init", project_name)
+    ensure_gitignore_entries(project_dir, "base", BASE_GITIGNORE_ENTRIES)
 
     # files shared by all supported architectures
     create_empty_file(project_dir / "Dockerfile")

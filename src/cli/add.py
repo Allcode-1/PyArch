@@ -18,7 +18,10 @@ def add_integration_command(
 ) -> None:
     """Add a supported integration to the current project."""
 
-    execute_or_exit(lambda: add_integration(integration_name))
+    project_root, created_files = execute_or_exit(lambda: add_integration(integration_name))
     console.print(
         f"[green]Added integration[/green] [bold]{integration_name}[/bold]"
+        f" in {project_root}"
     )
+    for file_path in created_files:
+        console.print(f"  [dim]{file_path.relative_to(project_root)}[/dim]")

@@ -41,3 +41,15 @@ def insert_line_before_marker(
     updated_content = content.replace(marker, f"{line}\n{marker}", 1)
     file_path.write_text(updated_content, encoding="utf-8")
     return True
+
+
+def append_text_once(file_path: Path, marker: str, text: str) -> bool:
+    content = file_path.read_text(encoding="utf-8") if file_path.exists() else ""
+
+    if marker in content:
+        return False
+
+    separator = "" if not content or content.endswith("\n") else "\n"
+    file_path.parent.mkdir(parents=True, exist_ok=True)
+    file_path.write_text(f"{content}{separator}{text}", encoding="utf-8")
+    return True

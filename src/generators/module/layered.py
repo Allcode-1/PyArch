@@ -14,8 +14,13 @@ def create_layered_module(
     project_dir: Path,
     module_name: str,
     database: DatabaseEngine | str = DatabaseEngine.POSTGRES,
+    *,
+    protected: bool = False,
 ) -> tuple[Path, ...]:
     database = DatabaseEngine(database)
+    if protected and database is DatabaseEngine.MONGODB:
+        raise ValueError("Protected modules are not supported for MongoDB projects yet")
+
     module_name = normalize_module_name(module_name)
     model_name = to_pascal_case(module_name)
     resource_name = pluralize_identifier(module_name)
@@ -44,7 +49,11 @@ def create_layered_module(
             app_path / "services" / f"{module_name}.py",
         ),
         (
-            "layered/module/module_router.py.j2",
+            (
+                "layered/module/module_router_protected.py.j2"
+                if protected
+                else "layered/module/module_router.py.j2"
+            ),
             app_path / "api" / "v1" / f"{module_name}.py",
         ),
     )
