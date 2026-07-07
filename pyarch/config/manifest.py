@@ -3,8 +3,8 @@ from typing import Any
 
 from tomlkit import document, dumps, load, table
 
-from src import __version__
-from src.config.models import (
+from pyarch import __version__
+from pyarch.config.models import (
     Architecture,
     DatabaseAccess,
     DatabaseEngine,

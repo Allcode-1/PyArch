@@ -1,9 +1,9 @@
 from pathlib import Path
 
-from src.config.models import DatabaseEngine
-from src.generators.common.commands import run_command
-from src.generators.common.filesystem import create_module_path
-from src.generators.common.renderer import create_file_from_template
+from pyarch.config.models import DatabaseEngine
+from pyarch.generators.common.commands import run_command
+from pyarch.generators.common.filesystem import create_module_path
+from pyarch.generators.common.renderer import create_file_from_template
 
 
 COMMON_RUNTIME_DEPENDENCIES = (

@@ -1,10 +1,10 @@
 
 from pathlib import Path
 
-from src.config.manifest import create_manifest
-from src.config.models import DatabaseEngine
-from src.generators.project.base import create_base_dir, create_readme_file
-from src.generators.project.layered import create_layered_project
+from pyarch.config.manifest import create_manifest
+from pyarch.config.models import DatabaseEngine
+from pyarch.generators.project.base import create_base_dir, create_readme_file
+from pyarch.generators.project.layered import create_layered_project
 
 
 def create_project(

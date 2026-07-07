@@ -1,4 +1,4 @@
-from src.cli.app import app
+from pyarch.cli.app import app
 
 
 def main() -> None:

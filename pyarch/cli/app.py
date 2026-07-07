@@ -3,12 +3,12 @@ from typing import Annotated
 import typer
 from rich.table import Table
 
-from src.cli.add import app as add_app
-from src.cli.common import console, execute_or_exit
-from src.cli.generate import app as generate_app
-from src.config.manifest import find_project_root, load_manifest
-from src.config.models import DatabaseEngine
-from src.services.create_project import create_project
+from pyarch.cli.add import app as add_app
+from pyarch.cli.common import console, execute_or_exit
+from pyarch.cli.generate import app as generate_app
+from pyarch.config.manifest import find_project_root, load_manifest
+from pyarch.config.models import DatabaseEngine
+from pyarch.services.create_project import create_project
 
 
 app = typer.Typer(

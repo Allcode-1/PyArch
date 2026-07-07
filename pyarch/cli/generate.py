@@ -2,8 +2,8 @@ from typing import Annotated
 
 import typer
 
-from src.cli.common import console, execute_or_exit
-from src.services.create_module import create_module
+from pyarch.cli.common import console, execute_or_exit
+from pyarch.services.create_module import create_module
 
 
 app = typer.Typer(no_args_is_help=True)

@@ -1,12 +1,12 @@
 from pathlib import Path
 
-from src.generators.common.commands import run_command
-from src.generators.common.filesystem import create_empty_dir, create_empty_file
-from src.generators.common.gitignore import (
+from pyarch.generators.common.commands import run_command
+from pyarch.generators.common.filesystem import create_empty_dir, create_empty_file
+from pyarch.generators.common.gitignore import (
     BASE_GITIGNORE_ENTRIES,
     ensure_gitignore_entries,
 )
-from src.generators.common.renderer import create_file_from_template
+from pyarch.generators.common.renderer import create_file_from_template
 
 
 def create_base_dir(project_name: str) -> Path:

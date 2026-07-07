@@ -1,5 +1,6 @@
 # PyArch
 
+[![PyPI](https://img.shields.io/pypi/v/PyArch-CLI)](https://pypi.org/project/PyArch-CLI/)
 ![Python](https://img.shields.io/badge/Python-3.13%2B-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-backend-green)
 ![Typer](https://img.shields.io/badge/Typer-CLI-purple)
@@ -36,6 +37,7 @@ Manifest is updated
 - Supports PostgreSQL, SQLite and MongoDB
 - Stateful project manifest (`pyarch.toml`)
 - Project-aware module generation
+- JWT auth integration with generated RSA keys
 - Automatic router and model registration
 - Jinja2 template rendering with `StrictUndefined`
 - Dependency installation via `uv`
@@ -56,6 +58,22 @@ $ cd demo
 $ pyarch generate module users
 
 ✓ Creating module...
+✓ Registering model...
+✓ Registering router...
+✓ Updating manifest...
+✓ Done.
+
+$ pyarch add integration auth
+
+✓ Creating auth files...
+✓ Generating RSA keys...
+✓ Registering auth router...
+✓ Updating manifest...
+✓ Done.
+
+$ pyarch generate module tasks --protected
+
+✓ Creating protected module...
 ✓ Registering model...
 ✓ Registering router...
 ✓ Updating manifest...
@@ -188,6 +206,8 @@ while still making missing data visible during development.
 - generating application layers, database configuration, test setup, and
   Alembic configuration for relational databases;
 - generating a basic CRUD module after project creation;
+- adding a JWT auth integration for PostgreSQL and SQLite projects;
+- generating protected CRUD routes with `pyarch generate module <name> --protected`;
 - registering generated SQLAlchemy models in `app/models/__init__.py`;
 - registering generated routers in `app/api/v1/router.py`;
 - keeping project state in `pyarch.toml`;
@@ -222,6 +242,13 @@ Generate a CRUD module:
 pyarch generate module users
 ```
 
+Add auth and generate protected routes:
+
+```bash
+pyarch add integration auth
+pyarch generate module tasks --protected
+```
+
 ## Roadmap
 
 ### v0.2
@@ -229,12 +256,10 @@ pyarch generate module users
 - safe generation
 - validation improvements
 - rollback on failed generation
-- integration generator foundation
-- PyPI package publishing
+- Redis integration foundation
 
 ### v0.3
 
-- auth generator
 - Redis integration
 - scheduler integration
 - dry-run mode
@@ -268,6 +293,7 @@ my_project/
 ├── docs/
 ├── tests/
 ├── alembic/          # PostgreSQL and SQLite only
+├── certs/            # created by the auth integration
 ├── .env.example
 ├── pyarch.toml
 └── pyproject.toml
@@ -280,7 +306,25 @@ my_project/
 - Python 3.13 or newer;
 - [uv](https://docs.astral.sh/uv/).
 
-## Local Setup
+## Installation
+
+Install the latest release from PyPI:
+
+```bash
+pip install pyarch-cli
+```
+
+Run the CLI:
+
+```bash
+pyarch --help
+```
+
+PyPI:
+
+https://pypi.org/project/PyArch-CLI/
+
+## Local Development
 
 Clone the repository and install its dependencies:
 
@@ -296,7 +340,7 @@ Run the CLI directly from the repository:
 uv run pyarch --help
 ```
 
-Install the current checkout as a local CLI tool:
+Install the current checkout as an editable CLI tool:
 
 ```bash
 uv tool install --editable .
@@ -314,7 +358,7 @@ the manifest format may still change while the project evolves.
 - only Layered Architecture is supported;
 - generated applications use synchronous database access;
 - only FastAPI projects are supported;
-- integration generators are planned, but not implemented yet;
+- auth integration currently supports PostgreSQL and SQLite projects;
 - generated projects are starter scaffolds and still require application-specific
   configuration and code;
 - the manifest format may change before a stable release.

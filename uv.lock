@@ -241,7 +241,7 @@ wheels = [
 ]
 
 [[package]]
-name = "pyarch"
+name = "pyarch-cli"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
@@ -260,6 +260,9 @@ requires-dist = [
     { name = "tomlkit", specifier = ">=0.15.0" },
     { name = "typer", specifier = ">=0.24.2" },
 ]
+
+[package.metadata.requires-dev]
+dev = []
 
 [[package]]
 name = "pycparser"

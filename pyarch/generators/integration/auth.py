@@ -3,20 +3,20 @@ from pathlib import Path
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 
-from src.config.models import DatabaseEngine
-from src.generators.common.commands import run_command
-from src.generators.common.filesystem import (
+from pyarch.config.models import DatabaseEngine
+from pyarch.generators.common.commands import run_command
+from pyarch.generators.common.filesystem import (
     append_text_once,
     create_empty_dir,
     create_module_path,
     insert_line_before_marker,
 )
-from src.generators.common.gitignore import (
+from pyarch.generators.common.gitignore import (
     AUTH_GITIGNORE_ENTRIES,
     ensure_gitignore_entries,
 )
-from src.generators.common.renderer import create_file_from_template
-from src.generators.module.layered import ensure_layered_project, register_model
+from pyarch.generators.common.renderer import create_file_from_template
+from pyarch.generators.module.layered import ensure_layered_project, register_model
 
 
 AUTH_INTEGRATION_NAME = "auth"

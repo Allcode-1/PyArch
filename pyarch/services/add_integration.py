@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from src.config.manifest import find_project_root, load_manifest, save_manifest
-from src.generators.integration.auth import (
+from pyarch.config.manifest import find_project_root, load_manifest, save_manifest
+from pyarch.generators.integration.auth import (
     AUTH_INTEGRATION_NAME,
     create_auth_integration,
 )
