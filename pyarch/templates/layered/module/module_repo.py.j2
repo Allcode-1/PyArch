@@ -19,13 +19,13 @@ def get_items(
     offset: int = 0,
     limit: int = 100,
 ) -> list[{{ model_name }}]:
-    statement = (
+    {{ model_name }} = (
         select({{ model_name }})
         .order_by({{ model_name }}.id)
         .offset(offset)
         .limit(limit)
     )
-    return list(db.scalars(statement).all())
+    return list(db.scalars({{model_name}}).all())
 
 
 def get_item(db: Session, item_id: int) -> {{ model_name }} | None:
@@ -37,6 +37,7 @@ def patch_item(
     item: {{ model_name }},
     values: dict[str, Any],
 ) -> {{ model_name }}:
+
     for field, value in values.items():
         setattr(item, field, value)
 

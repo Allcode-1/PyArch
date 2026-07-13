@@ -12,13 +12,6 @@ class {{ model_name }}Update(BaseModel):
     title: str | None = Field(default=None, min_length=1, max_length=55)
     description: str | None = Field(default=None, max_length=255)
 
-    @field_validator("title")
-    @classmethod
-    def title_must_not_be_null(cls, value: str | None) -> str | None:
-        if value is None:
-            raise ValueError("title cannot be null")
-        return value
-
 
 class {{ model_name }}Read(BaseModel):
     id: {{ id_type }}
