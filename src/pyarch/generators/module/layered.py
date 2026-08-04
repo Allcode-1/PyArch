@@ -18,8 +18,6 @@ def create_layered_module(
     protected: bool = False,
 ) -> tuple[Path, ...]:
     database = DatabaseEngine(database)
-    if protected and database is DatabaseEngine.MONGODB:
-        raise ValueError("Protected modules are not supported for MongoDB projects yet")
 
     module_name = normalize_module_name(module_name)
     model_name = to_pascal_case(module_name)
@@ -31,7 +29,7 @@ def create_layered_module(
 
     ensure_layered_project(models_init, main_router)
 
-    relational_targets = (
+    targets = (
         (
             "layered/module/module_model.py.j2",
             app_path / "models" / f"{module_name}.py",
@@ -65,38 +63,6 @@ def create_layered_module(
             project_dir / "tests" / f"test_{module_name}.py",
         ),
     )
-    mongodb_targets = (
-        (
-            "layered/mongodb/module/module_model.py.j2",
-            app_path / "models" / f"{module_name}.py",
-        ),
-        (
-            "layered/module/module_schema.py.j2",
-            app_path / "schemas" / f"{module_name}.py",
-        ),
-        (
-            "layered/mongodb/module/module_repo.py.j2",
-            app_path / "repositories" / f"{module_name}.py",
-        ),
-        (
-            "layered/mongodb/module/module_service.py.j2",
-            app_path / "services" / f"{module_name}.py",
-        ),
-        (
-            "layered/mongodb/module/module_router.py.j2",
-            app_path / "api" / "v1" / f"{module_name}.py",
-        ),
-        (
-            "layered/module/module_test.py.j2",
-            project_dir / "tests" / f"test_{module_name}.py",
-        ),
-    )
-    targets = (
-        mongodb_targets
-        if database is DatabaseEngine.MONGODB
-        else relational_targets
-    )
-
     existing_targets = [path for _, path in targets if path.exists()]
     if existing_targets:
         existing = ", ".join(str(path) for path in existing_targets)
@@ -107,7 +73,7 @@ def create_layered_module(
         "model_name": model_name,
         "resource_name": resource_name,
         "table_name": resource_name,
-        "id_type": "str" if database is DatabaseEngine.MONGODB else "int",
+        "id_type": "int",
     }
 
     created_files = tuple(

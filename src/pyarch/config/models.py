@@ -9,7 +9,6 @@ class Architecture(StrEnum):
 class DatabaseEngine(StrEnum):
     POSTGRES = "postgres"
     SQLITE = "sqlite"
-    MONGODB = "mongodb"
 
 
 class DatabaseAccess(StrEnum):

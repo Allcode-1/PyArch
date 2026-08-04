@@ -37,11 +37,7 @@ def create_manifest(
         pyarch_version=__version__,
         project=ProjectSettings(name=project_name),
         database=DatabaseSettings(engine=database),
-        paths=ProjectPaths(
-            migrations=(
-                None if database is DatabaseEngine.MONGODB else "alembic"
-            )
-        ),
+        paths=ProjectPaths(),
     )
     save_manifest(project_dir, manifest)
     return manifest

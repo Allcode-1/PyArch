@@ -13,7 +13,7 @@ COMMON_RUNTIME_DEPENDENCIES = (
     "pydantic-settings",
 )
 
-RELATIONAL_RUNTIME_DEPENDENCIES = (
+SQL_RUNTIME_DEPENDENCIES = (
     "sqlalchemy",
     "alembic",
 )
@@ -21,7 +21,6 @@ RELATIONAL_RUNTIME_DEPENDENCIES = (
 DATABASE_RUNTIME_DEPENDENCIES = {
     DatabaseEngine.POSTGRES: ("psycopg[binary]",),
     DatabaseEngine.SQLITE: (),
-    DatabaseEngine.MONGODB: ("pymongo",),
 }
 
 COMMON_DEV_DEPENDENCIES = (
@@ -47,8 +46,7 @@ def create_layered_project(
     create_database_setup(project_dir, app_path, database)
     create_test_setup(project_dir, database)
 
-    if database is not DatabaseEngine.MONGODB:
-        initialize_alembic(project_dir)
+    initialize_alembic(project_dir)
 
     return app_path
 
@@ -59,17 +57,12 @@ def install_dependencies(
 ) -> None:
     runtime_dependencies = list(COMMON_RUNTIME_DEPENDENCIES)
 
-    if database is not DatabaseEngine.MONGODB:
-        runtime_dependencies.extend(RELATIONAL_RUNTIME_DEPENDENCIES)
+    runtime_dependencies.extend(SQL_RUNTIME_DEPENDENCIES)
 
     runtime_dependencies.extend(DATABASE_RUNTIME_DEPENDENCIES[database])
     run_command("uv", "add", *runtime_dependencies, cwd=project_dir)
 
-    dev_dependencies = list(COMMON_DEV_DEPENDENCIES)
-    if database is DatabaseEngine.MONGODB:
-        dev_dependencies.append("mongomock")
-
-    run_command("uv", "add", "--dev", *dev_dependencies, cwd=project_dir)
+    run_command("uv", "add", "--dev", *COMMON_DEV_DEPENDENCIES, cwd=project_dir)
 
 
 def create_layered_arch(app_path: Path) -> None:
@@ -126,21 +119,6 @@ def create_database_setup(
     app_path: Path,
     database: DatabaseEngine,
 ) -> None:
-    if database is DatabaseEngine.MONGODB:
-        create_file_from_template(
-            template_name="layered/mongodb/config.py.j2",
-            output_path=app_path / "core" / "config.py",
-        )
-        create_file_from_template(
-            template_name="layered/mongodb/session.py.j2",
-            output_path=app_path / "db" / "session.py",
-        )
-        create_file_from_template(
-            template_name="layered/mongodb/env.example.j2",
-            output_path=project_dir / ".env.example",
-        )
-        return
-
     create_file_from_template(
         template_name="layered/config.py.j2",
         output_path=app_path / "core" / "config.py",
@@ -163,13 +141,8 @@ def create_test_setup(
 ) -> None:
     create_module_path(project_dir / "tests")
 
-    template_name = (
-        "layered/mongodb/conftest.py.j2"
-        if database is DatabaseEngine.MONGODB
-        else "project/base/conftest.py.j2"
-    )
     create_file_from_template(
-        template_name=template_name,
+        template_name="project/base/conftest.py.j2",
         output_path=project_dir / "tests" / "conftest.py",
     )
 

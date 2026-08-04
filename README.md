@@ -26,7 +26,7 @@ PyArch removes repetitive setup while keeping the generated code readable and
 ready to change.
 
 - Layered FastAPI project structure
-- PostgreSQL, SQLite and MongoDB support
+- PostgreSQL and SQLite support
 - Complete CRUD modules with models, schemas, repositories, services and routes
 - Automatic model and router registration
 - JWT auth integration with generated RSA keys
@@ -116,7 +116,7 @@ Each generated CRUD module adds:
 | Command | Description |
 | --- | --- |
 | `pyarch init <name>` | Create a Layered FastAPI project |
-| `pyarch init <name> --database <engine>` | Select PostgreSQL, SQLite or MongoDB |
+| `pyarch init <name> --database <engine>` | Select PostgreSQL or SQLite |
 | `pyarch generate module <name>` | Add a CRUD module to the current project |
 | `pyarch add integration auth` | Add JWT authentication and user management |
 | `pyarch generate module <name> --protected` | Generate CRUD routes that require authentication |
@@ -131,7 +131,6 @@ Generation commands must be run inside a project created by PyArch.
 | --- | --- | --- | --- | --- |
 | PostgreSQL | Yes | Yes | Yes | Yes |
 | SQLite | Yes | Yes | Yes | Yes |
-| MongoDB | Yes | Not needed | Not yet | Not yet |
 
 Current limitations:
 

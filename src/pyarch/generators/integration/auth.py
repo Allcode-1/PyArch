@@ -43,8 +43,6 @@ def create_auth_integration(
     database: DatabaseEngine | str,
 ) -> tuple[Path, ...]:
     database = DatabaseEngine(database)
-    if database is DatabaseEngine.MONGODB:
-        raise ValueError("Auth integration is not supported for MongoDB projects yet")
 
     app_path = project_dir / "app"
     auth_path = app_path / "auth"
