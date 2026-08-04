@@ -101,6 +101,21 @@ def create_layered_arch(app_path: Path) -> None:
     )
 
     create_file_from_template(
+        template_name="layered/errors.py.j2",
+        output_path=app_path / "core" / "errors.py",
+    )
+
+    create_file_from_template(
+        template_name="layered/exception_handlers.py.j2",
+        output_path=app_path / "core" / "exception_handlers.py",
+    )
+
+    create_file_from_template(
+        template_name="layered/pagination.py.j2",
+        output_path=app_path / "dependencies" / "pagination.py",
+    )
+
+    create_file_from_template(
         template_name="layered/models_init.py.j2",
         output_path=app_path / "models" / "__init__.py",
     )

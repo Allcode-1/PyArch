@@ -56,6 +56,14 @@ def create_layered_module(
             ),
             app_path / "api" / "v1" / f"{module_name}.py",
         ),
+        (
+            (
+                "layered/module/module_test_protected.py.j2"
+                if protected
+                else "layered/module/module_test.py.j2"
+            ),
+            project_dir / "tests" / f"test_{module_name}.py",
+        ),
     )
     mongodb_targets = (
         (
@@ -77,6 +85,10 @@ def create_layered_module(
         (
             "layered/mongodb/module/module_router.py.j2",
             app_path / "api" / "v1" / f"{module_name}.py",
+        ),
+        (
+            "layered/module/module_test.py.j2",
+            project_dir / "tests" / f"test_{module_name}.py",
         ),
     )
     targets = (
@@ -104,7 +116,7 @@ def create_layered_module(
     )
 
     register_model(models_init, module_name, model_name)
-    register_router(main_router, module_name)
+    register_router(main_router, module_name, resource_name)
     return created_files
 
 
@@ -173,14 +185,17 @@ def register_model(
     )
 
 
-def register_router(main_router: Path, module_name: str) -> None:
+def register_router(main_router: Path, module_name: str, resource_name: str) -> None:
     insert_line_before_marker(
         main_router,
         "# pyarch:router-imports",
-        f"from app.api.v1.{module_name} import router as {module_name}_router",
+        f"from app.api.v1 import {module_name}",
     )
     insert_line_before_marker(
         main_router,
         "# pyarch:router-includes",
-        f"v1_router.include_router({module_name}_router)",
+        (
+            f'v1_router.include_router({module_name}.router, '
+            f'prefix="/{resource_name}", tags=["{resource_name}"])'
+        ),
     )

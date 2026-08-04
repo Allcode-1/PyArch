@@ -29,9 +29,9 @@ dependencies = [
 pyarch = "pyarch.cli.app:app"
 
 [project.urls]
-Homepage = "https://github.com/Allcode-1/fastapi-skeleton-generator"
-Repository = "https://github.com/Allcode-1/fastapi-skeleton-generator"
-Issues = "https://github.com/Allcode-1/fastapi-skeleton-generator/issues"
+Homepage = "https://github.com/Allcode-1/PyArch"
+Repository = "https://github.com/Allcode-1/PyArch"
+Issues = "https://github.com/Allcode-1/PyArch/issues"
 
 [build-system]
 requires = ["hatchling"]
