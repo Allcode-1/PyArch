@@ -16,6 +16,10 @@ Unlike a one-time project template, PyArch keeps a small manifest in the
 generated project. Later commands use it to understand the project and update
 the right files.
 
+<p align="center">
+  <img src="./assets/pyarch-demo.gif" alt="PyArch CLI demo" width="900">
+</p>
+
 ## Why PyArch?
 
 PyArch removes repetitive setup while keeping the generated code readable and

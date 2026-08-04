@@ -1,0 +1,17 @@
+#!/bin/sh
+
+if [ "$1" = "init" ]; then
+    exec /usr/local/bin/uv-real "$@" --no-workspace
+fi
+
+if [ "$1" = "add" ]; then
+    exit 0
+fi
+
+if [ "$1" = "run" ] && [ "$2" = "alembic" ] && [ "$3" = "init" ]; then
+    mkdir -p "$4"
+    touch "$4/env.py"
+    exit 0
+fi
+
+exec /usr/local/bin/uv-real "$@"
