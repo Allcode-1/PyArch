@@ -1,7 +1,6 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Form, status
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.auth import service as auth_service
@@ -48,4 +47,4 @@ def get_me(user: CurrentUser) -> User:
 
 @router.get("/users", response_model=list[UserRead])
 def get_all_users(_user: AdminUser, db: DbSession) -> list[User]:
-    return list(db.scalars(select(User).order_by(User.id)).all())
+    return auth_service.list_users(db)

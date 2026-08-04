@@ -15,9 +15,15 @@ class AuthJWTSettings(BaseModel):
     refresh_token_expire_days: int = 30
 
 
+class PaginationSettings(BaseModel):
+    default_limit: int = 50
+    max_limit: int = 100
+
+
 class Settings(BaseSettings):
     database_url: str
     auth_jwt: AuthJWTSettings = Field(default_factory=AuthJWTSettings)
+    pagination: PaginationSettings = PaginationSettings()
 
     model_config = SettingsConfigDict(
         env_file=".env",

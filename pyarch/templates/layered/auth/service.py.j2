@@ -117,6 +117,10 @@ def login_user(username: str, password: str, db: Session) -> TokenPair:
     return create_token_pair(user, db)
 
 
+def list_users(db: Session) -> list[User]:
+    return list(db.scalars(select(User).order_by(User.id)).all())
+
+
 def logout_user(refresh_token: str, db: Session) -> dict[str, str]:
     token_payload = decode_refresh_payload(refresh_token)
     refresh_session = get_refresh_session(db, token_payload["jti"])

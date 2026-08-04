@@ -1,0 +1,47 @@
+DEFAULT_PASSWORD = "secret123"
+
+
+def auth_headers(token: str) -> dict[str, str]:
+    return {"Authorization": f"Bearer {token}"}
+
+
+def register_user(
+    client,
+    username: str,
+    email: str | None = None,
+    password: str = DEFAULT_PASSWORD,
+) -> dict:
+    response = client.post(
+        "/api/v1/auth/register",
+        json={
+            "username": username,
+            "email": email or f"{username}@example.com",
+            "password": password,
+        },
+    )
+    assert response.status_code == 201, response.json()
+    return response.json()
+
+
+def login_user(
+    client,
+    username: str,
+    password: str = DEFAULT_PASSWORD,
+) -> dict:
+    response = client.post(
+        "/api/v1/auth/login",
+        data={"username": username, "password": password},
+    )
+    assert response.status_code == 200, response.json()
+    return response.json()
+
+
+def register_and_login(
+    client,
+    username: str,
+    email: str | None = None,
+    password: str = DEFAULT_PASSWORD,
+) -> tuple[dict, dict]:
+    user = register_user(client, username=username, email=email, password=password)
+    tokens = login_user(client, username=username, password=password)
+    return user, tokens
