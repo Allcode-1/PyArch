@@ -23,6 +23,9 @@ SCHEMA_VERSION = 1
 class ManifestError(ValueError):
     pass
 
+def load_current_manifest():
+    project_root = find_project_root()
+    return project_root, load_manifest(project_root)
 
 def create_manifest(
     project_dir: Path,
