@@ -71,21 +71,19 @@ def test_engine():
 
 @pytest.fixture(scope="function")
 def db_session(test_engine):
-    connection = test_engine.connect()
-    transaction = connection.begin()
-
     session = Session(
-        bind=connection,
+        bind=test_engine,
         autoflush=False,
         expire_on_commit=False,
-        join_transaction_mode="create_savepoint",
     )
 
     yield session
 
     session.close()
-    transaction.rollback()
-    connection.close()
+
+    with test_engine.begin() as connection:
+        for table in reversed(Base.metadata.sorted_tables):
+            connection.execute(table.delete())
 
 
 @pytest.fixture(scope="function")
