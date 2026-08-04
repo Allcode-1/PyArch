@@ -65,6 +65,8 @@ def create_auth_integration(
             "layered/auth/refresh_session_model.py.j2",
             app_path / "models" / "refresh_session.py",
         ),
+        ("layered/auth/test_helpers.py.j2", project_dir / "tests" / "helpers.py"),
+        ("layered/auth/test_auth.py.j2", project_dir / "tests" / "test_auth.py"),
     )
     generated_targets = [path for _, path in auth_targets]
     generated_targets.extend(
