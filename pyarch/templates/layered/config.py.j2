@@ -1,12 +1,20 @@
+from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class PaginationSettings(BaseModel):
+    default_limit: int = 50
+    max_limit: int = 100
 
 
 class Settings(BaseSettings):
     database_url: str
+    pagination: PaginationSettings = PaginationSettings()
 
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
+        env_nested_delimiter="__",
         extra="ignore",
     )
 
