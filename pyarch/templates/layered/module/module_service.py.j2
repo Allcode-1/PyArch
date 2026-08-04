@@ -1,76 +1,67 @@
 from sqlalchemy.orm import Session
 
+from app.core.errors import AppError
 from app.models.{{ module_name }} import {{ model_name }}
-from app.repositories import {{ module_name }} as {{ module_name }}_repository
+from app.repositories.{{ module_name }} import {{ model_name }}Repository
 from app.schemas.{{ module_name }} import {{ model_name }}Create, {{ model_name }}Update
 
 
-class {{ model_name }}NotFoundError(LookupError):
-    def __init__(self, item_id: int) -> None:
-        super().__init__(f"{{ model_name }} with id={item_id} was not found")
+class {{ model_name }}Service:
+    def __init__(self, db: Session):
+        self.db = db
+        self.repository = {{ model_name }}Repository(db)
 
-
-def add_item(db: Session, payload: {{ model_name }}Create) -> {{ model_name }}:
-    try:
-        item = {{ module_name }}_repository.add_item(
-            db,
-            payload.model_dump(),
+    def create(self, payload: {{ model_name }}Create) -> {{ model_name }}:
+        {{ module_name }} = self.repository.create(
+            title=payload.title,
+            description=payload.description,
         )
-        db.commit()
-        db.refresh(item)
-        return item
-    except Exception:
-        db.rollback()
-        raise
 
+        self.db.commit()
+        self.db.refresh({{ module_name }})
 
-def get_items(
-    db: Session,
-    *,
-    offset: int = 0,
-    limit: int = 100,
-) -> list[{{ model_name }}]:
-    return {{ module_name }}_repository.get_items(
-        db,
-        offset=offset,
-        limit=limit,
-    )
+        return {{ module_name }}
 
+    def list(
+        self,
+        limit: int | None = None,
+        offset: int = 0,
+    ) -> list[{{ model_name }}]:
+        return self.repository.list(limit, offset)
 
-def get_item(db: Session, item_id: int) -> {{ model_name }}:
-    item = {{ module_name }}_repository.get_item(db, item_id)
-    if item is None:
-        raise {{ model_name }}NotFoundError(item_id)
-    return item
+    def get(self, {{ module_name }}_id: int) -> {{ model_name }}:
+        {{ module_name }} = self.repository.get_by_id({{ module_name }}_id)
 
+        if {{ module_name }} is None:
+            raise AppError(404, "{{ model_name }} not found")
 
-def patch_item(
-    db: Session,
-    item_id: int,
-    payload: {{ model_name }}Update,
-) -> {{ model_name }}:
-    item = get_item(db, item_id)
+        return {{ module_name }}
 
-    try:
-        updated_item = {{ module_name }}_repository.patch_item(
-            db,
-            item,
-            payload.model_dump(exclude_unset=True),
-        )
-        db.commit()
-        db.refresh(updated_item)
-        return updated_item
-    except Exception:
-        db.rollback()
-        raise
+    def update(
+        self,
+        payload: {{ model_name }}Update,
+        {{ module_name }}_id: int,
+    ) -> {{ model_name }}:
+        {{ module_name }} = self.repository.get_by_id({{ module_name }}_id)
 
+        if {{ module_name }} is None:
+            raise AppError(404, "{{ model_name }} not found")
 
-def delete_item(db: Session, item_id: int) -> None:
-    item = get_item(db, item_id)
+        updated_fields = payload.model_dump(exclude_unset=True)
+        {{ module_name }} = self.repository.update({{ module_name }}, updated_fields)
 
-    try:
-        {{ module_name }}_repository.delete_item(db, item)
-        db.commit()
-    except Exception:
-        db.rollback()
-        raise
+        self.db.commit()
+        self.db.refresh({{ module_name }})
+
+        return {{ module_name }}
+
+    def delete(self, {{ module_name }}_id: int) -> None:
+        {{ module_name }} = self.repository.get_by_id({{ module_name }}_id)
+
+        if {{ module_name }} is None:
+            raise AppError(404, "{{ model_name }} not found")
+
+        self.repository.delete({{ module_name }})
+        self.db.commit()
+
+        return None

@@ -1,0 +1,71 @@
+from tests.helpers import auth_headers, register_and_login
+
+
+MODULE_PATH = "/api/v1/{{ resource_name }}/"
+
+
+def create_{{ module_name }}(
+    client,
+    access_token: str,
+    title: str = "Build API",
+    description: str | None = "Generated module smoke test",
+) -> dict:
+    response = client.post(
+        MODULE_PATH,
+        json={"title": title, "description": description},
+        headers=auth_headers(access_token),
+    )
+    assert response.status_code == 201, response.json()
+    return response.json()
+
+
+def test_{{ module_name }}_crud(client):
+    _, tokens = register_and_login(client, username="{{ module_name }}_owner")
+    access_token = tokens["access_token"]
+    created = create_{{ module_name }}(client, access_token)
+
+    get_response = client.get(
+        f"{MODULE_PATH}{created['id']}",
+        headers=auth_headers(access_token),
+    )
+    patch_response = client.patch(
+        f"{MODULE_PATH}{created['id']}",
+        json={"title": "Ship API"},
+        headers=auth_headers(access_token),
+    )
+    delete_response = client.delete(
+        f"{MODULE_PATH}{created['id']}",
+        headers=auth_headers(access_token),
+    )
+    missing_response = client.get(
+        f"{MODULE_PATH}{created['id']}",
+        headers=auth_headers(access_token),
+    )
+
+    assert get_response.status_code == 200
+    assert get_response.json()["id"] == created["id"]
+    assert patch_response.status_code == 200
+    assert patch_response.json()["title"] == "Ship API"
+    assert delete_response.status_code == 204
+    assert missing_response.status_code == 404
+
+
+def test_{{ resource_name }}_list_supports_pagination(client):
+    _, tokens = register_and_login(client, username="{{ module_name }}_viewer")
+    access_token = tokens["access_token"]
+    _first = create_{{ module_name }}(client, access_token, title="First item")
+    second = create_{{ module_name }}(client, access_token, title="Second item")
+
+    response = client.get(
+        f"{MODULE_PATH}?limit=1&offset=1",
+        headers=auth_headers(access_token),
+    )
+
+    assert response.status_code == 200
+    assert [item["id"] for item in response.json()] == [second["id"]]
+
+
+def test_{{ resource_name }}_require_authentication(client):
+    response = client.get(MODULE_PATH)
+
+    assert response.status_code == 401
