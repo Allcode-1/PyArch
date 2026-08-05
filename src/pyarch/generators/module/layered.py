@@ -6,7 +6,6 @@ from pyarch.config.models import DatabaseEngine
 from pyarch.generators.common.filesystem import insert_line_before_marker
 from pyarch.generators.common.renderer import create_file_from_template
 
-
 MODULE_NAME_PATTERN = re.compile(r"^[a-z][a-z0-9_]*$")
 
 
@@ -161,7 +160,7 @@ def register_router(main_router: Path, module_name: str, resource_name: str) -> 
         main_router,
         "# pyarch:router-includes",
         (
-            f'v1_router.include_router({module_name}.router, '
+            f"v1_router.include_router({module_name}.router, "
             f'prefix="/{resource_name}", tags=["{resource_name}"])'
         ),
     )

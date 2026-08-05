@@ -1,4 +1,3 @@
-
 from pathlib import Path
 
 from pyarch.config.manifest import create_manifest

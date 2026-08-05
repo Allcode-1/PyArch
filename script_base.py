@@ -1,6 +1,6 @@
-from pathlib import Path
-import subprocess
 import shutil
+import subprocess
+from pathlib import Path
 from textwrap import dedent
 
 # base dir
@@ -15,14 +15,30 @@ project_name = input()
 project_dir = base / project_name
 
 subprocess.run(["uv", "init", project_name], cwd=base, check=True)
-subprocess.run(["uv", "add", "fastapi", "uvicorn", "sqlalchemy", "psycopg[binary]", "alembic", "dotenv"], cwd=project_dir, check=True)
-subprocess.run(["uv", "add", "--dev", "pytest", "mypy", "ruff"], cwd=project_dir, check=True)
+subprocess.run(
+    [
+        "uv",
+        "add",
+        "fastapi",
+        "uvicorn",
+        "sqlalchemy",
+        "psycopg[binary]",
+        "alembic",
+        "dotenv",
+    ],
+    cwd=project_dir,
+    check=True,
+)
+subprocess.run(
+    ["uv", "add", "--dev", "pytest", "mypy", "ruff"], cwd=project_dir, check=True
+)
 subprocess.run(["uv", "run", "alembic", "init", "alembic"], cwd=project_dir, check=True)
 
 # creating a .env file
 env = project_dir / ".env"
 env.touch(exist_ok=True)
-env.write_text(dedent("""
+env.write_text(
+    dedent("""
     # db and test db
     DATABASE_URL=postgresql+psycopg://yourname:password@localhost:5432/db-name
     TEST_DATABASE_URL=postgresql+psycopg://yourname:password@localhost:5432/test-db-name
@@ -32,12 +48,14 @@ env.write_text(dedent("""
     SECRET_KEY=your_secret_key
     ALGORITHM="HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES=30
-    """).strip() + "\n",
+    """).strip()
+    + "\n",
     encoding="utf-8",
 )
 
 gitignore = project_dir / ".gitignore"
-gitignore.write_text(dedent("""
+gitignore.write_text(
+    dedent("""
     # Python-generated files
     __pycache__/
     *.py[oc]
@@ -49,7 +67,8 @@ gitignore.write_text(dedent("""
     # Virtual environments
     .venv
     .env
-    """).strip() + "\n",
+    """).strip()
+    + "\n",
     encoding="utf-8",
 )
 
@@ -83,14 +102,16 @@ main_py.write_text(
         @app.get("/health")
         def healthcheck():
             return {"status": "ok"}
-        """).strip() + "\n", 
+        """).strip()
+    + "\n",
     encoding="utf-8",
 )
 
 # creating session.py for db connection (postgresql)
 session = app_dir / "db" / "session.py"
 session.touch(exist_ok=True)
-session.write_text(dedent("""
+session.write_text(
+    dedent("""
     import os
 
     from dotenv import load_dotenv
@@ -123,7 +144,8 @@ session.write_text(dedent("""
             yield db
         finally:
             db.close()
-    """).strip() + "\n",
+    """).strip()
+    + "\n",
     encoding="utf-8",
 )
 
@@ -132,7 +154,8 @@ tests_init = tests_dir / "__init__.py"
 tests_init.touch(exist_ok=True)
 tests_db = tests_dir / "conftest.py"
 tests_db.touch(exist_ok=True)
-tests_db.write_text(dedent("""
+tests_db.write_text(
+    dedent("""
     import os
 
     import pytest
@@ -222,26 +245,30 @@ tests_db.write_text(dedent("""
         
         fastapi_app.dependency_overrides.clear()
 
-    """).strip() + "\n",
+    """).strip()
+    + "\n",
     encoding="utf-8",
 )
 
-#creating __init__ for models to make alembic models import easy
+# creating __init__ for models to make alembic models import easy
 models_init = app_dir / "models" / "__init__.py"
 models_init.touch(exist_ok=True)
-models_init.write_text(dedent("""
+models_init.write_text(
+    dedent("""
     # from app.models.yourmodel import modelClass
     # from app.models.yourmodel2 import modelClass2
     # from app.models.yourmodel3 import modelClass3
 
     # __all__ = ("modelClass", "modelClass2", ...)
-    """).strip() + "\n",
+    """).strip()
+    + "\n",
     encoding="utf-8",
 )
 
 # rewriting alembic env.py file (db connection, models import, smmall settings)
 alembic_env = project_dir / "alembic" / "env.py"
-alembic_env.write_text(dedent("""
+alembic_env.write_text(
+    dedent("""
     from logging.config import fileConfig
     import os
     from dotenv import load_dotenv
@@ -303,12 +330,14 @@ alembic_env.write_text(dedent("""
         run_migrations_offline()
     else:
         run_migrations_online()
-    """).strip() + "\n",
+    """).strip()
+    + "\n",
     encoding="utf-8",
 )
 
 readme = project_dir / "README.md"
-readme.write_text(dedent("""
+readme.write_text(
+    dedent("""
     ## After Running the Script
 
     If you opened this file, you probably already ran the script. Follow these steps to make your project skeleton work.
@@ -335,21 +364,7 @@ readme.write_text(dedent("""
     Now your pet project is ready to go.
 
     Write anything you want there, even ToDo lists.
-    """).strip() + "\n",
+    """).strip()
+    + "\n",
     encoding="utf-8",
 )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

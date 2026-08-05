@@ -5,7 +5,6 @@ import typer
 from pyarch.cli.common import console, execute_or_exit
 from pyarch.services.add_integration import add_integration
 
-
 app = typer.Typer(no_args_is_help=True)
 
 
@@ -18,7 +17,9 @@ def add_integration_command(
 ) -> None:
     """Add a supported integration to the current project."""
 
-    project_root, created_files = execute_or_exit(lambda: add_integration(integration_name))
+    project_root, created_files = execute_or_exit(
+        lambda: add_integration(integration_name)
+    )
     console.print(
         f"[green]Added integration[/green] [bold]{integration_name}[/bold]"
         f" in {project_root}"

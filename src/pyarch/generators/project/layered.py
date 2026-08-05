@@ -5,7 +5,6 @@ from pyarch.generators.common.commands import run_command
 from pyarch.generators.common.filesystem import create_module_path
 from pyarch.generators.common.renderer import create_file_from_template
 
-
 COMMON_RUNTIME_DEPENDENCIES = (
     "fastapi",
     "uvicorn",

@@ -1,9 +1,8 @@
 import typer
-
 from rich.table import Table
+
 from pyarch.cli.common import console, execute_or_exit
 from pyarch.config.manifest import load_current_manifest
-
 
 app = typer.Typer(no_args_is_help=True)
 
@@ -28,5 +27,3 @@ def show_info() -> None:
         ", ".join(manifest.state.integrations) or "none",
     )
     console.print(table)
-
-

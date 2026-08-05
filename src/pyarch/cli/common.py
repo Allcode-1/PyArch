@@ -5,7 +5,6 @@ from typing import Never, TypeVar
 import typer
 from rich.console import Console
 
-
 console = Console()
 ResultT = TypeVar("ResultT")
 

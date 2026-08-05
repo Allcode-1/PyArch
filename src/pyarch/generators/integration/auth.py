@@ -18,7 +18,6 @@ from pyarch.generators.common.gitignore import (
 from pyarch.generators.common.renderer import create_file_from_template
 from pyarch.generators.module.layered import ensure_layered_project, register_model
 
-
 AUTH_INTEGRATION_NAME = "auth"
 AUTH_ENV_MARKER = "# PyArch auth integration"
 AUTH_ENV_BLOCK = f"""

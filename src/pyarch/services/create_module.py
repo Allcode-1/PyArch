@@ -19,9 +19,7 @@ def create_module(
     normalized_name = normalize_module_name(module_name)
 
     if normalized_name in manifest.state.modules:
-        raise FileExistsError(
-            f"Module {normalized_name!r} is already registered"
-        )
+        raise FileExistsError(f"Module {normalized_name!r} is already registered")
 
     if manifest.project.architecture is not Architecture.LAYERED:
         raise ValueError(

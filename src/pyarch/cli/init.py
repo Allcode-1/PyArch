@@ -6,7 +6,6 @@ from pyarch.cli.common import console, execute_or_exit
 from pyarch.config.models import DatabaseEngine
 from pyarch.services.create_project import create_project
 
-
 app = typer.Typer(no_args_is_help=True)
 
 
@@ -29,10 +28,7 @@ def init_project(
     """Create a new Layered FastAPI project."""
 
     console.print(
-        f"Creating [bold]{project_name}[/bold] "
-        f"with [cyan]{database.value}[/cyan]..."
+        f"Creating [bold]{project_name}[/bold] with [cyan]{database.value}[/cyan]..."
     )
-    project_dir = execute_or_exit(
-        lambda: create_project(project_name, database)
-    )
+    project_dir = execute_or_exit(lambda: create_project(project_name, database))
     console.print(f"[bold green]Project created:[/bold green] {project_dir}")

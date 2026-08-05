@@ -15,7 +15,6 @@ from pyarch.config.models import (
     ProjectState,
 )
 
-
 MANIFEST_NAME = "pyarch.toml"
 SCHEMA_VERSION = 1
 
@@ -23,9 +22,11 @@ SCHEMA_VERSION = 1
 class ManifestError(ValueError):
     pass
 
+
 def load_current_manifest():
     project_root = find_project_root()
     return project_root, load_manifest(project_root)
+
 
 def create_manifest(
     project_dir: Path,
@@ -153,8 +154,6 @@ def require_table(raw: dict[str, Any], key: str) -> dict[str, Any]:
 
 def require_string_list(data: dict[str, Any], key: str) -> list[str]:
     value = data[key]
-    if not isinstance(value, list) or not all(
-        isinstance(item, str) for item in value
-    ):
+    if not isinstance(value, list) or not all(isinstance(item, str) for item in value):
         raise ManifestError(f"{key!r} must be an array of strings")
     return list(value)

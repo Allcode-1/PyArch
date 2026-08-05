@@ -19,9 +19,7 @@ def add_integration(
         raise ValueError("Integration name cannot be empty")
 
     if normalized_name in manifest.state.integrations:
-        raise FileExistsError(
-            f"Integration {normalized_name!r} is already registered"
-        )
+        raise FileExistsError(f"Integration {normalized_name!r} is already registered")
 
     if normalized_name != AUTH_INTEGRATION_NAME:
         raise NotImplementedError(

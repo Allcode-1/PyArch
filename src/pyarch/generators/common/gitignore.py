@@ -1,6 +1,5 @@
 from pathlib import Path
 
-
 BASE_GITIGNORE_ENTRIES = (
     ".env",
     ".env.*",
@@ -32,7 +31,9 @@ def ensure_gitignore_entries(
     entries: tuple[str, ...],
 ) -> Path:
     gitignore_path = project_dir / ".gitignore"
-    content = gitignore_path.read_text(encoding="utf-8") if gitignore_path.exists() else ""
+    content = (
+        gitignore_path.read_text(encoding="utf-8") if gitignore_path.exists() else ""
+    )
     lines = content.splitlines()
     existing_entries = {line.strip() for line in lines}
 

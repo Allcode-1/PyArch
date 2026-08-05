@@ -5,7 +5,6 @@ import typer
 from pyarch.cli.common import console, execute_or_exit
 from pyarch.services.create_module import create_module
 
-
 app = typer.Typer(no_args_is_help=True)
 
 
@@ -27,8 +26,7 @@ def generate_module(
     )
 
     console.print(
-        f"[green]Created module[/green] [bold]{module_name}[/bold] "
-        f"in {project_root}"
+        f"[green]Created module[/green] [bold]{module_name}[/bold] in {project_root}"
     )
     for file_path in created_files:
         console.print(f"  [dim]{file_path.relative_to(project_root)}[/dim]")
