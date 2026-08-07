@@ -20,13 +20,23 @@ def create_base_dir(project_name: str) -> Path:
     run_command("uv", "init", project_name)
     ensure_gitignore_entries(project_dir, "base", BASE_GITIGNORE_ENTRIES)
 
-    # files shared by all supported architectures
-    create_empty_file(project_dir / "Dockerfile")
-    create_empty_file(project_dir / "docker-compose.yml")
-
     create_docs_dir(project_dir)
 
     return project_dir
+
+
+def create_dockerfile(project_dir: Path) -> None:
+    create_file_from_template(
+        template_name="project/base/Dockerfile.j2",
+        output_path=project_dir / "Dockerfile"
+    )
+
+
+def create_docker_compose(project_dir: Path) -> None:
+    create_file_from_template(
+            template_name="project/base/docker-compose.yml.j2",
+            output_path=project_dir / "docker-compose.yml"
+        )
 
 
 def create_docs_dir(project_dir: Path) -> None:
