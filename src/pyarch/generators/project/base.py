@@ -1,3 +1,7 @@
+"""
+Create a base for any project.
+"""
+
 from pathlib import Path
 
 from pyarch.generators.common.commands import run_command
@@ -10,16 +14,20 @@ from pyarch.generators.common.renderer import create_file_from_template
 
 
 def create_base_dir(project_name: str) -> Path:
-    """
-    create base dir with all README.md, gitignore, ,env.example and etc files
-    """
 
     project_dir = Path.cwd() / project_name
 
     # creating base uv app
     run_command("uv", "init", project_name)
+
+    # .gitignote
     ensure_gitignore_entries(project_dir, "base", BASE_GITIGNORE_ENTRIES)
 
+    # docker 
+    create_dockerfile(project_dir)
+    create_docker_compose(project_dir)
+
+    # docs
     create_docs_dir(project_dir)
 
     return project_dir
@@ -40,10 +48,6 @@ def create_docker_compose(project_dir: Path) -> None:
 
 
 def create_docs_dir(project_dir: Path) -> None:
-    """
-    creating files where you can describe your project, rbac roles etc.
-    """
-
     docs_dir = create_empty_dir(project_dir / "docs")
     create_empty_file(docs_dir / "RBAC.md")
     create_empty_file(docs_dir / "ARCHITECTURE.md")

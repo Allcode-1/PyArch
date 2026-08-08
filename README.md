@@ -53,18 +53,10 @@ pyarch init my_project --database postgres
 cd my_project
 ```
 
-Copy `.env.example` to `.env` and set the database connection values. For
-PostgreSQL or SQLite, create the first migration:
+Copy `.env.example` to `.env` and set the database connection values. Start the services with Docker Compose:
 
 ```bash
-uv run alembic revision --autogenerate -m "initial"
-uv run alembic upgrade head
-```
-
-Run the API:
-
-```bash
-uv run uvicorn app.main:app --reload
+docker compose up -d
 ```
 
 Open `http://127.0.0.1:8000/docs` to use the generated Swagger UI.
@@ -113,24 +105,24 @@ Each generated CRUD module adds:
 
 ## Commands
 
-| Command | Description |
-| --- | --- |
-| `pyarch init <name>` | Create a Layered FastAPI project |
-| `pyarch init <name> --database <engine>` | Select PostgreSQL or SQLite |
-| `pyarch generate module <name>` | Add a CRUD module to the current project |
-| `pyarch add integration auth` | Add JWT authentication and user management |
+| Command                                     | Description                                      |
+| ------------------------------------------- | ------------------------------------------------ |
+| `pyarch init <name>`                        | Create a Layered FastAPI project                 |
+| `pyarch init <name> --database <engine>`    | Select PostgreSQL or SQLite                      |
+| `pyarch generate module <name>`             | Add a CRUD module to the current project         |
+| `pyarch add integration auth`               | Add JWT authentication and user management       |
 | `pyarch generate module <name> --protected` | Generate CRUD routes that require authentication |
-| `pyarch info` | Show the current project configuration |
-| `pyarch --help` | Show CLI help |
+| `pyarch info`                               | Show the current project configuration           |
+| `pyarch --help`                             | Show CLI help                                    |
 
 Generation commands must be run inside a project created by PyArch.
 
 ## Databases and Current Limitations
 
-| Database | CRUD modules | Alembic | Auth integration | Protected modules |
-| --- | --- | --- | --- | --- |
-| PostgreSQL | Yes | Yes | Yes | Yes |
-| SQLite | Yes | Yes | Yes | Yes |
+| Database   | CRUD modules | Alembic | Auth integration | Protected modules |
+| ---------- | ------------ | ------- | ---------------- | ----------------- |
+| PostgreSQL | Yes          | Yes     | Yes              | Yes               |
+| SQLite     | Yes          | Yes     | Yes              | Yes               |
 
 Current limitations:
 

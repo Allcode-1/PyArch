@@ -45,7 +45,9 @@ def create_manifest(
 
 
 def find_project_root(start: Path | None = None) -> Path:
+
     current = (start or Path.cwd()).resolve()
+
     if current.is_file():
         current = current.parent
 
@@ -59,7 +61,9 @@ def find_project_root(start: Path | None = None) -> Path:
 
 
 def load_manifest(project_dir: Path) -> ProjectManifest:
+
     manifest_path = project_dir / MANIFEST_NAME
+
     if not manifest_path.is_file():
         raise FileNotFoundError(f"Manifest does not exist: {manifest_path}")
 
@@ -110,6 +114,7 @@ def load_manifest(project_dir: Path) -> ProjectManifest:
 
 
 def save_manifest(project_dir: Path, manifest: ProjectManifest) -> Path:
+    
     manifest_path = project_dir / MANIFEST_NAME
     temporary_path = manifest_path.with_suffix(".toml.tmp")
 

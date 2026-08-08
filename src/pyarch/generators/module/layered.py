@@ -6,6 +6,7 @@ from pyarch.config.models import DatabaseEngine
 from pyarch.generators.common.filesystem import insert_line_before_marker
 from pyarch.generators.common.renderer import create_file_from_template
 
+
 MODULE_NAME_PATTERN = re.compile(r"^[a-z][a-z0-9_]*$")
 
 
@@ -16,6 +17,7 @@ def create_layered_module(
     *,
     protected: bool = False,
 ) -> tuple[Path, ...]:
+    
     database = DatabaseEngine(database)
 
     module_name = normalize_module_name(module_name)
